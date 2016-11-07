@@ -20,7 +20,7 @@ public class UDPServer implements Runnable{
 		{
 			DatagramSocket datagramSocket = new DatagramSocket(SERVPORT);
 	        //DatagramSocket dgSock = new DatagramSocket();
-	        System.out.println("UDP Server running....");
+	        System.out.println("UDP Server running on port "+SERVPORT+"...");
 	        
 	        while(true)
 	         {
