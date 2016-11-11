@@ -8,10 +8,13 @@ public class UDPServer implements Runnable{
 	final int SERVPORT = 7125;
 	final int NUMBYTES = 512;
 	LinkedList<String> queue = null;
+	LinkedList<WebSocketConnection> socks = null;
 	
-	public UDPServer(LinkedList<String> q)
+	public UDPServer(LinkedList<String> q,LinkedList<WebSocketConnection> w)
 	{
 		queue = q;
+		socks = w;
+		
 	}
 	
 	@Override
@@ -29,6 +32,13 @@ public class UDPServer implements Runnable{
 	            	byte[] buffer = new byte[NUMBYTES];
 	            	DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
 	            	datagramSocket.receive(packet);
+	            	String s = new String(packet.getData());
+	            	char why = 0;
+	            	s = s.replace(why+"", "");
+	            	if(!s.equals("0"))
+	            	{
+	            		(new Thread(new MessageSender(socks,s))).start();
+	            	}
 	            	
 	            	String payload = "-1";
 	            	if(!queue.isEmpty())

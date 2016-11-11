@@ -24,8 +24,13 @@ public class SocketGuy {
 		String username = null;
     	String chanID = null;
     	char[] password = null;
+    	boolean websocketserv = true;
+    	boolean webserver = true;
+    	WebSocketServer wsockserv;
+    	Thread websockthread;
     	File f = new File("config.ini");
     	LinkedList<String> queue = new LinkedList<String>();
+    	LinkedList<WebSocketConnection> websocks = new LinkedList<WebSocketConnection>();
     	if(DEBUGGING)
     	{
     		username = "WhoIsWORM";
@@ -89,9 +94,14 @@ public class SocketGuy {
 			e.printStackTrace();
 		}
 		
-		//set up server
-		UDPServer serv = new UDPServer(queue);
+		//set up server(s)
+		if(websocketserv)
+		{
+			websockthread = new Thread(wsockserv = new WebSocketServer(websocks));
+			websockthread.start();
+		}
+		
+		UDPServer serv = new UDPServer(queue,websocks);
 		serv.run();
 	}
-
 }

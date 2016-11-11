@@ -10,12 +10,14 @@ socket = require('socket')
 local con = socket.udp()
 con:setsockname("*", 0)
 con:setpeername("127.0.0.1", 7125)
+con:settimeout(100);
 -- find out which port we're using
 local ip, port = con:getsockname()
 -- Output the port we're using
 print("Port: " .. port)
 local inst
 local buttid
+local message = "0"
 
 math.randomseed(os.time())
 smb = {}
@@ -49,8 +51,9 @@ function remove(q)
 end
 
 while true do
-    if emu.framecount() % 8 == 0 then
-        con:send("0");
+    if emu.framecount() % 24 == 0 then
+        con:send(message);
+        message = "0"
         inst = con:receive()
         if inst ~= "-1" then
             --a button was pushed.
@@ -66,6 +69,7 @@ while true do
                     --Something is being removed
                     print("--Executing--"..buttid)
                     if buttid == "0" then
+                        message = "A random enemy appears"
                         print("--Rand--")
                         randomNumber = 1
                         if enone == 6 then
@@ -75,9 +79,11 @@ while true do
                         end
                         mainmemory.writebyte(22,smb[randomNumber])
                     elseif buttid == "1" then
+                        message = "A Buzzy Beetle appears"
                         mainmemory.writebyte(22,2)
                         print("--Beetle--")
                     elseif buttid == "2" then
+                        message = "A Hammer Bro appears"
                         mainmemory.writebyte(22,5)
                         print("--Hammer--")
                     end
