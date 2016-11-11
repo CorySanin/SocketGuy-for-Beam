@@ -11,15 +11,20 @@ con:setpeername("127.0.0.1", 7125)
 local ip, port = con:getsockname()
 -- Output the port we're using
 print("Port: " .. port)
+local message = "0"
 local inst
 while true do
-    --if emu.framecount() % 8 == 0 then
-        con:send("0");
-        inst = con:receive()
-        if inst ~= "-1" then
-            --a button was pushed.
-            print("datagram: " .. inst)
+    if emu.framecount() % 12 == 0 then
+        if emu.framecount() % 24 == 0 then
+            con:send(message);
+            message = "0"
+        else
+            inst = con:receive()
+            if inst ~= "-1" then
+                --a button was pushed.
+                print("datagram: " .. inst)
+            end
         end
-        emu.frameadvance()
-    --end
+    end
+    emu.frameadvance()
 end	

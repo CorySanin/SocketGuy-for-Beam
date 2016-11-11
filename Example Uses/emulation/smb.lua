@@ -51,14 +51,19 @@ function remove(q)
 end
 
 while true do
-    if emu.framecount() % 24 == 0 then
-        con:send(message);
-        message = "0"
-        inst = con:receive()
-        if inst ~= "-1" then
-            --a button was pushed.
-            print("datagram: " .. inst)
-            insert(dataQ,inst)
+    if emu.framecount() % 12 == 0 then
+        if(emu.framecount() % 24 == 0) then
+            --Send "0" if just requesting buttons,\
+            --or a message if requesting buttons AND want to display the message
+            con:send(message);
+            message = "0"
+        else
+            inst = con:receive()
+            if inst ~= "-1" then
+                --a button was pushed.
+                print("datagram: " .. inst)
+                insert(dataQ,inst)
+            end
         end
         if dataQ.first <= dataQ.last then
             --There's something in the queue
@@ -67,7 +72,7 @@ while true do
                 if enone == 6 or enone == 0 then
                     buttid = remove(dataQ)
                     --Something is being removed
-                    print("--Executing--"..buttid)
+                    print("--Executing--")
                     if buttid == "0" then
                         message = "A random enemy appears"
                         print("--Rand--")
