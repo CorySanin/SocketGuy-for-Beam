@@ -1,5 +1,3 @@
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.DataInputStream;
@@ -11,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pro.beam.api.BeamAPI;
+import pro.beam.api.exceptions.user.WrongPasswordException;
 import pro.beam.interactive.net.packet.Protocol;
 import pro.beam.interactive.net.packet.Protocol.Report.TactileInfo;
 import pro.beam.interactive.robot.RobotBuilder;
@@ -26,6 +25,7 @@ public class SocketGuy {
     	char[] password = null;
     	boolean websocketserv = true;
     	boolean webserver = true;
+    	boolean ready = true;
     	WebSocketServer wsockserv;
     	Thread websockthread;
     	File f = new File("config.ini");
@@ -67,7 +67,6 @@ public class SocketGuy {
 		//everything is in
 		
 		try {
-			Robot controller = new Robot();
 	        pro.beam.interactive.robot.Robot robot = new RobotBuilder()
 	                .username(username)
 	                .password(new String(password))
@@ -91,17 +90,24 @@ public class SocketGuy {
 	        	}
 	        });
 		} catch (Exception e) {
-			e.printStackTrace();
+			ready = false;
+			if(e.getCause() instanceof WrongPasswordException)
+				System.out.println("Wrong Password.");
+			else
+				e.printStackTrace();
 		}
 		
-		//set up server(s)
-		if(websocketserv)
+		if(ready)
 		{
-			websockthread = new Thread(wsockserv = new WebSocketServer(websocks));
-			websockthread.start();
+			//set up server(s)
+			if(websocketserv)
+			{
+				websockthread = new Thread(wsockserv = new WebSocketServer(websocks));
+				websockthread.start();
+			}
+			
+			UDPServer serv = new UDPServer(queue,websocks);
+			serv.run();
 		}
-		
-		UDPServer serv = new UDPServer(queue,websocks);
-		serv.run();
 	}
 }

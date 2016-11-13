@@ -57,7 +57,8 @@ public class WebSocketConnection {
 				byte[] shaout = md.digest();
 				byte[] encodedBytes = Base64.encodeBase64(shaout);
 				String key = new String(encodedBytes);
-				writeSock.writeBytes("HTTP/1.1 101 Switching Protocols\r\n"
+				if(!sock.isClosed())
+					writeSock.writeBytes("HTTP/1.1 101 Switching Protocols\r\n"
 						+ "Upgrade: websocket\r\n"
 						+ "Connection: Upgrade\r\n"
 						+ "Sec-WebSocket-Accept: "+ key + "\r\n\r\n");
@@ -72,8 +73,10 @@ public class WebSocketConnection {
 		}
 	}
 	
-	public void notify(String s)
+	public boolean notify(String s)
 	{
+		if(sock.isClosed())
+			return false;
 		int rawstart = 2;
 		byte[] message = s.getBytes();
 		byte lengthbyte;
@@ -117,7 +120,14 @@ public class WebSocketConnection {
 		try {
 			SockOutput.write(output);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Attempting to close WebSocket");
+			try {
+				sock.close();
+			} catch (IOException e1) {
+				System.out.println("Couldn't close WebSocket");
+			}
+			return false;
 		}
+		return true;
 	}
 }

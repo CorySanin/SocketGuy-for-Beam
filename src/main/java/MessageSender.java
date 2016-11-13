@@ -13,9 +13,19 @@ public class MessageSender implements Runnable{
 	@Override
 	public void run() {
 		Iterator<WebSocketConnection> iter = socks.iterator();
+		int curr = 0;
 		while(iter.hasNext())
 		{
-			iter.next().notify(message);
+			try{
+				if(!iter.next().notify(message))
+					socks.remove(curr);
+				else
+					curr++;
+			}
+			catch(Exception ex)
+			{
+				//Don't worry about it.
+			}
 		}
 	}
 	
