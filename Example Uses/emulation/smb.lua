@@ -4,8 +4,8 @@
 --Button 2 will change certain enemies in the first slot to a Hammer Bro
 --Button 0 will change certain enemies in the first slot to one of several enemies, randomly
 --Works in BizHawk with necessary files
-package.cpath = ";./?.dll;"
-package.path = ";./socket/?.lua;"
+package.cpath = ";../?.dll;"
+package.path = ";../socket/?.lua;"
 socket = require('socket')
 local con = socket.udp()
 con:setsockname("*", 0)
