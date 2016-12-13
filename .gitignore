@@ -1,3 +1,5 @@
 src/test/java/LibraryTest.java
 bin/
 /.gradle/
+
+SocketGuy.jar
