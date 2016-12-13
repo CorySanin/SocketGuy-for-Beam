@@ -193,7 +193,7 @@ public class HTTP
     	         + "};"
     	         + "</script>"
     	         + "</head>"
-    	         + "<body onload=\"notify('wow')\">"
+    	         + "<body>"
     	         + "<div id=\"nts\" class=\"main\">"
     	         + "</div>"
     	         + "</body></html>\r\n");
