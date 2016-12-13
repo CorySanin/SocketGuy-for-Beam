@@ -15,7 +15,7 @@ import pro.beam.interactive.net.packet.Protocol.Report.TactileInfo;
 import pro.beam.interactive.robot.RobotBuilder;
 
 public class SocketGuy {
-	final private static boolean DEBUGGING = false;
+	final private static boolean DEBUGGING = true;
 	
 	public static void main(String[] args) {
 		Console console = System.console();
@@ -23,11 +23,13 @@ public class SocketGuy {
 		String username = null;
     	String chanID = null;
     	char[] password = null;
-    	boolean websocketserv = true;
-    	boolean webserver = true;
+    	boolean websocketserv = false;
+    	boolean webserver = false;
     	boolean ready = true;
     	WebSocketServer wsockserv;
     	Thread websockthread;
+    	webserver web;
+    	Thread webthread;
     	File f = new File("config.ini");
     	LinkedList<String> queue = new LinkedList<String>();
     	LinkedList<WebSocketConnection> websocks = new LinkedList<WebSocketConnection>();
@@ -36,6 +38,8 @@ public class SocketGuy {
     		username = "WhoIsWORM";
     		chanID = "183839";
     		password = "PASSWORD".toCharArray();
+    		websocketserv = true;
+    		webserver = websocketserv && true;
     	}
     	else
 		{
@@ -63,6 +67,15 @@ public class SocketGuy {
 	        	}
 			}
 			password = console.readPassword("Enter your password: ");
+			System.out.println("Would you like to start extra web servers for stream notifications?");
+			System.out.println("0) No additional servers/no stream notifications");
+			System.out.println("1) Websocket server (only ideal for web devs)");
+			System.out.println("2) Websocket and web server for stream notifications");
+			String optionsel = console.readLine("enter a number 0-2: ");
+			if(optionsel.equals("1") || optionsel.equals("2"))
+				websocketserv = true;
+			if(optionsel.equals("2"))
+				webserver = true;
 		}
 		//everything is in
 		
@@ -104,6 +117,11 @@ public class SocketGuy {
 			{
 				websockthread = new Thread(wsockserv = new WebSocketServer(websocks));
 				websockthread.start();
+			}
+			if(webserver)
+			{
+				webthread = new Thread(web = new webserver());
+				webthread.start();
 			}
 			
 			UDPServer serv = new UDPServer(queue,websocks);
